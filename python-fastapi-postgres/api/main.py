@@ -1,10 +1,25 @@
 from fastapi import FastAPI
 from typing import List
+from contextlib import asynccontextmanager
 
 from models import User, UserCreate
 from database import DatabaseManager, UserRepository
 
-app = FastAPI(title="User API", description="Simple CRUD API with PostgreSQL")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: Create users table if it doesn't exist
+    await DatabaseManager.initialize_database()
+    yield
+    # Shutdown: cleanup if needed
+
+
+app = FastAPI(
+    title="User API",
+    description="Simple CRUD API with PostgreSQL",
+    lifespan=lifespan
+)
+
 
 @app.get("/")
 def read_root():
@@ -14,12 +29,6 @@ def read_root():
 @app.get("/health")
 async def health_check():
     return await DatabaseManager.check_health()
-
-
-@app.on_event("startup")
-async def startup_event():
-    # Create users table if it doesn't exist
-    await DatabaseManager.initialize_database()
 
 
 @app.get("/users", response_model=List[User])

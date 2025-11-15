@@ -9,21 +9,65 @@ from models import User, UserCreate
 
 class DatabaseManager:
     """Database manager for handling PostgreSQL operations."""
-    
+
     @staticmethod
     async def get_connection():
-        """Get database connection using PostgreSQL URI from Aspire."""
+        """Get database connection using DB_URI from Aspire."""
         db_uri = os.getenv("DB_URI")
         if not db_uri:
             raise HTTPException(status_code=500, detail="DB_URI not found")
-        
-        return await psycopg.AsyncConnection.connect(db_uri, row_factory=dict_row)
-    
+
+        return await psycopg.AsyncConnection.connect(db_uri, row_factory=dict_row, autocommit=True)
+
     @staticmethod
     async def initialize_database():
-        """Create users table if it doesn't exist."""
+        """Create database and users table if they don't exist."""
+        print("=" * 60)
+        print("Starting database initialization...")
+        print("=" * 60)
+
         try:
+            # Get environment variables
+            postgres_uri = os.getenv("POSTGRES_URI")
+            db_uri = os.getenv("DB_URI")
+            db_name = os.getenv("DB_DATABASE", "db")
+
+            print(f"Environment variables:")
+            print(f"  POSTGRES_URI: {'✓ Set' if postgres_uri else '✗ Not found'}")
+            print(f"  DB_URI: {'✓ Set' if db_uri else '✗ Not found'}")
+            print(f"  DB_DATABASE: {db_name}")
+
+            if not postgres_uri:
+                raise Exception("POSTGRES_URI required for database initialization")
+
+            # Step 1: Connect to PostgreSQL server
+            print(f"\n[1/4] Connecting to PostgreSQL server...")
+            async with await psycopg.AsyncConnection.connect(postgres_uri, autocommit=True) as conn:
+                print(f"  ✓ Connected to PostgreSQL server")
+
+                # Step 2: Check if database exists
+                print(f"\n[2/4] Checking if database '{db_name}' exists...")
+                async with conn.cursor() as cur:
+                    await cur.execute(
+                        "SELECT 1 FROM pg_database WHERE datname = %s",
+                        (db_name,)
+                    )
+                    exists = await cur.fetchone()
+
+                    if exists:
+                        print(f"  ✓ Database '{db_name}' already exists")
+                    else:
+                        # Step 3: Create database
+                        print(f"  → Database '{db_name}' does not exist, creating...")
+                        await cur.execute(f'CREATE DATABASE "{db_name}"')
+                        print(f"  ✓ Database '{db_name}' created successfully")
+
+            # Step 4: Connect to target database and create table
+            print(f"\n[3/4] Connecting to database '{db_name}'...")
             async with await DatabaseManager.get_connection() as conn:
+                print(f"  ✓ Connected to database '{db_name}'")
+
+                print(f"\n[4/4] Creating 'users' table if it doesn't exist...")
                 async with conn.cursor() as cur:
                     await cur.execute("""
                         CREATE TABLE IF NOT EXISTS users (
@@ -33,9 +77,15 @@ class DatabaseManager:
                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                         )
                     """)
-            print("✓ Database initialized")
+                print(f"  ✓ Table 'users' ready")
+
+            print("\n" + "=" * 60)
+            print("✓ Database initialization completed successfully")
+            print("=" * 60)
         except Exception as e:
-            print(f"✗ Database initialization error: {e}")
+            print("\n" + "=" * 60)
+            print(f"✗ Database initialization failed: {e}")
+            print("=" * 60)
             raise
     
     @staticmethod

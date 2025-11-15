@@ -8,12 +8,13 @@ var builder = DistributedApplication.CreateBuilder(args);
 builder.AddDockerComposeEnvironment("dc");
 
 var postgres = builder.AddPostgres("postgres")
-                      .WithPgAdmin()
-                      .AddDatabase("db");
+                      .WithPgAdmin();
+var db = postgres.AddDatabase("db");
 
 builder.AddUvicornApp("api", "./api", "main:app")
        .WithExternalHttpEndpoints()
-       .WaitFor(postgres)
+       .WaitFor(db)
+       .WithReference(db)
        .WithReference(postgres);
 
 builder.Build().Run();
