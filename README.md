@@ -27,6 +27,11 @@ Visit counter with clickable page cards. YARP routes frontend and API. Real-time
 **[yarpstatic](./yarpstatic)** - YARP serving static files
 Single-file AppHost pattern. Vite with HMR in dev, static files in publish. Container files as build artifacts.
 
+### C#
+
+**[csharp-minimal-postgres](./csharp-minimal-postgres)** - ASP.NET Core Minimal API + PostgreSQL + Vite
+Todo app with EF Core 10, pgAdmin, and Scalar API docs. React TypeScript frontend with container files publishing. Observability with OpenTelemetry.
+
 ### Polyglot
 
 **[vite-react-fastapi](./vite-react-fastapi)** - React + FastAPI fullstack
