@@ -10,6 +10,7 @@ This sample demonstrates Aspire 13's polyglot platform support for Python applic
 
 - [Aspire CLI](https://aspire.dev/get-started/install-cli/)
 - [Docker](https://docs.docker.com/get-docker/)
+- [Python 3.8+](https://www.python.org/)
 
 ### Commands
 

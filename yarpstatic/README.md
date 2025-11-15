@@ -10,6 +10,7 @@ This sample demonstrates how to use YARP (Yet Another Reverse Proxy) with Aspire
 
 - [Aspire CLI](https://aspire.dev/get-started/install-cli/)
 - [Docker](https://docs.docker.com/get-docker/)
+- [Node.js 22+](https://nodejs.org/)
 
 ### Commands
 

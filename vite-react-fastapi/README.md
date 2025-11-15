@@ -10,6 +10,8 @@ This sample showcases Aspire 13's polyglot support with a modern fullstack appli
 
 - [Aspire CLI](https://aspire.dev/get-started/install-cli/)
 - [Docker](https://docs.docker.com/get-docker/)
+- [Python 3.8+](https://www.python.org/)
+- [Node.js 22+](https://nodejs.org/)
 
 ### Commands
 

@@ -9,7 +9,7 @@ This sample shows how Aspire 13's Python support automatically manages Python ap
 ### Prerequisites
 
 - [Aspire CLI](https://aspire.dev/get-started/install-cli/)
-- Python 3.8 or later
+- [Python 3.8+](https://www.python.org/)
 
 ### Commands
 

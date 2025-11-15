@@ -10,6 +10,7 @@ This sample demonstrates Aspire 13's JavaScript/Node.js polyglot support with a 
 
 - [Aspire CLI](https://aspire.dev/get-started/install-cli/)
 - [Docker](https://docs.docker.com/get-docker/)
+- [Node.js 22+](https://nodejs.org/)
 
 ### Commands
 

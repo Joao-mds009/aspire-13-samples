@@ -10,6 +10,8 @@ This sample demonstrates Aspire 13's Python support combined with AI workloads, 
 
 - [Aspire CLI](https://aspire.dev/get-started/install-cli/)
 - [Docker](https://docs.docker.com/get-docker/)
+- [Python 3.8+](https://www.python.org/)
+- [uv](https://github.com/astral-sh/uv)
 - OpenAI API key
 
 ### Commands
