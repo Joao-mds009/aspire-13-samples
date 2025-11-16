@@ -4,11 +4,17 @@ YARP reverse proxy serving a Vite frontend with dual-mode operation (dev HMR + p
 
 ## Architecture
 
+**Run Mode:**
 ```mermaid
 flowchart LR
     Browser --> YARP
-    YARP -->|Dev: Proxy| Vite[Vite Dev Server]
-    YARP -->|Prod: Serve| Static[Static Files]
+    YARP --> Vite[Vite Dev Server<br/>HMR enabled]
+```
+
+**Publish Mode:**
+```mermaid
+flowchart LR
+    Browser --> YARP[YARP<br/>with embedded<br/>static files]
 ```
 
 ## What This Demonstrates
@@ -35,7 +41,7 @@ aspire do docker-compose-down-dc  # Teardown deployment
 
 ## Key Aspire Patterns
 
-**Dual-Mode YARP** - Dev proxies to Vite, production serves static files:
+**Dual-Mode YARP** - Run mode proxies to Vite, publish mode serves static files:
 ```csharp
 var frontend = builder.AddViteApp("frontend", "./frontend");
 
@@ -43,9 +49,9 @@ builder.AddYarp("app")
     .WithConfiguration(c =>
     {
         if (builder.ExecutionContext.IsRunMode)
-            c.AddRoute("{**catch-all}", frontend); // Dev: proxy to Vite HMR
+            c.AddRoute("{**catch-all}", frontend); // Run: proxy to Vite HMR
     })
-    .PublishWithStaticFiles(frontend); // Prod: serve static files
+    .PublishWithStaticFiles(frontend); // Publish: serve static files
 ```
 
 **Single Entry Point** - YARP provides one external endpoint for the entire application

@@ -4,11 +4,19 @@ Upload documents and ask questions using Retrieval Augmented Generation with vec
 
 ## Architecture
 
+**Run Mode:**
 ```mermaid
 flowchart LR
-    User[User] --> Svelte[Svelte Frontend]
-    Svelte -->|Dev: Proxy| API[FastAPI]
-    Svelte -->|Prod: Embedded| API
+    User --> Svelte[Vite Dev Server<br/>HMR enabled]
+    Svelte -->|Proxy /api| API[FastAPI]
+    API --> Qdrant[Qdrant Vector DB]
+    API --> OpenAI[OpenAI API]
+```
+
+**Publish Mode:**
+```mermaid
+flowchart LR
+    User --> API[FastAPI<br/>with embedded<br/>static files]
     API --> Qdrant[Qdrant Vector DB]
     API --> OpenAI[OpenAI API]
 ```
@@ -20,7 +28,7 @@ flowchart LR
 - **AddViteApp**: Svelte 5 frontend with Vite
 - **AddQdrant**: Vector database for semantic search
 - **AddOpenAI**: Secure API key management
-- **PublishWithContainerFiles**: Frontend embedded in API for production
+- **PublishWithContainerFiles**: Frontend embedded in API for publish mode
 
 ## Running
 
@@ -40,7 +48,7 @@ aspire do docker-compose-down-dc  # Teardown deployment
 
 ## Key Aspire Patterns
 
-**Static File Embedding** - Frontend proxied in dev, embedded in production:
+**Static File Embedding** - Frontend proxied in run mode, embedded in publish mode:
 ```csharp
 var api = builder.AddUvicornApp("api", "./api", "main:app")
     .WithUv();

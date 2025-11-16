@@ -4,11 +4,19 @@ Todo app with React frontend and Python FastAPI backend using YARP for unified r
 
 ## Architecture
 
+**Run Mode:**
 ```mermaid
 flowchart LR
-    Browser -->|Dev: HMR<br>Prod: Static| YARP
+    Browser --> YARP
     YARP -->|/api/*| FastAPI[FastAPI Backend]
-    YARP -.->|Dev only| Vite[Vite Dev Server]
+    YARP --> Vite[Vite Dev Server<br/>HMR enabled]
+```
+
+**Publish Mode:**
+```mermaid
+flowchart LR
+    Browser --> YARP[YARP<br/>with embedded<br/>static files]
+    YARP -->|/api/*| FastAPI[FastAPI Backend]
 ```
 
 ## What This Demonstrates
@@ -17,8 +25,8 @@ flowchart LR
 - **AddViteApp**: React + TypeScript frontend with Vite
 - **AddYarp**: Single endpoint with path-based routing
 - **WithTransformPathRemovePrefix**: Strip `/api` prefix before forwarding
-- **PublishWithStaticFiles**: Frontend embedded in YARP for production
-- **Dual-Mode Operation**: Vite HMR in dev, static files in production
+- **PublishWithStaticFiles**: Frontend embedded in YARP for publish mode
+- **Dual-Mode Operation**: Vite HMR in run mode, static files in publish mode
 - **Polyglot Fullstack**: JavaScript + Python working together
 
 ## Running
@@ -53,9 +61,9 @@ builder.AddYarp("app")
          .WithTransformPathRemovePrefix("/api"); // /api/todos → /todos
 
         if (builder.ExecutionContext.IsRunMode)
-            c.AddRoute("{**catch-all}", frontend); // Dev: proxy to Vite
+            c.AddRoute("{**catch-all}", frontend); // Run: proxy to Vite
     })
-    .PublishWithStaticFiles(frontend); // Prod: serve static files
+    .PublishWithStaticFiles(frontend); // Publish: serve static files
 ```
 
 **Path Transform Example**:

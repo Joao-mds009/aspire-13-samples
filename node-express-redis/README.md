@@ -4,12 +4,21 @@ Visit counter with Express backend, Redis caching, and React TypeScript frontend
 
 ## Architecture
 
+**Run Mode:**
 ```mermaid
 flowchart LR
-    Browser -->|Dev: HMR<br>Prod: Static| YARP
+    Browser --> YARP
+    YARP -->|/api/*| Express[Express API]
+    YARP --> Vite[Vite Dev Server<br/>HMR enabled]
+    Express --> Redis
+```
+
+**Publish Mode:**
+```mermaid
+flowchart LR
+    Browser --> YARP[YARP<br/>with embedded<br/>static files]
     YARP -->|/api/*| Express[Express API]
     Express --> Redis
-    YARP -.->|Dev only| Vite[Vite Dev Server]
 ```
 
 ## What This Demonstrates
@@ -18,8 +27,8 @@ flowchart LR
 - **AddViteApp**: React + TypeScript frontend with Vite
 - **AddYarp**: Single endpoint for frontend and API with path transforms
 - **AddRedis**: In-memory data store with automatic connection injection
-- **PublishWithStaticFiles**: Frontend embedded in YARP for production
-- **Dual-Mode Operation**: Vite HMR in dev, static files in production
+- **PublishWithStaticFiles**: Frontend embedded in YARP for publish mode
+- **Dual-Mode Operation**: Vite HMR in run mode, static files in publish mode
 
 ## Running
 
@@ -46,9 +55,9 @@ builder.AddYarp("app")
          .WithTransformPathRemovePrefix("/api");
 
         if (builder.ExecutionContext.IsRunMode)
-            c.AddRoute("{**catch-all}", frontend); // Dev: proxy to Vite
+            c.AddRoute("{**catch-all}", frontend); // Run: proxy to Vite
     })
-    .PublishWithStaticFiles(frontend); // Prod: serve static files
+    .PublishWithStaticFiles(frontend); // Publish: serve static files
 ```
 
 **Redis Connection** - Automatic connection string injection via `REDIS_URI` environment variable
