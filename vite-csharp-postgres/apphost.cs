@@ -8,14 +8,17 @@ var builder = DistributedApplication.CreateBuilder(args);
 builder.AddDockerComposeEnvironment("dc");
 
 var postgres = builder.AddPostgres("postgres")
-                      .WithPgAdmin()
-                      .AddDatabase("db");
+                      .WithDataVolume() // volume to persist data
+                      .WithLifetime(ContainerLifetime.Persistent) // keep the container running between application runs
+                      .WithPgAdmin(c => c.WithLifetime(ContainerLifetime.Persistent)); // optional: add pgAdmin with persistent lifetime
+
+var db = postgres.AddDatabase("db");
 
 var api = builder.AddCSharpApp("api", "./api")
                  .WithHttpHealthCheck("/health")
                  .WithExternalHttpEndpoints()
-                 .WaitFor(postgres)
-                 .WithReference(postgres)
+                 .WaitFor(db)
+                 .WithReference(db)
                  .WithUrls(context =>
                  {
                      foreach (var url in context.Urls)
@@ -29,9 +32,15 @@ var api = builder.AddCSharpApp("api", "./api")
                          DisplayText = "API Reference",
                          Endpoint = context.GetEndpoint("https")
                      });
+                 })
+                 .PublishAsDockerComposeService((_, svc) =>
+                 {
+                    // When creating the docker compose service
+                    svc.Restart = "always";
                  });
 
 var frontend = builder.AddViteApp("frontend", "./frontend")
+                      .WithEndpoint("http", e => e.Port = 9081) // set a fixed port
                       .WithReference(api)
                       .WithUrl("", "Todo UI");
 
