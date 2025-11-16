@@ -1,6 +1,6 @@
 # Aspire 13 Samples
 
-Small, focused samples demonstrating .NET Aspire 13's polyglot platform support for Python and JavaScript.
+Small, focused samples demonstrating .NET Aspire 13's polyglot platform support for Python, JavaScript, and C#.
 
 **Quick Start:** `cd <sample> && aspire run`
 
@@ -8,37 +8,45 @@ Small, focused samples demonstrating .NET Aspire 13's polyglot platform support 
 
 ## Samples
 
+### AI & Machine Learning
+
+**[openai-chat-htmx](./openai-chat-htmx)** - OpenAI chat with HTMX
+GPT-powered chat application with streaming responses. Uses HTMX for dynamic UI updates (no build step required), Redis for conversation history. **(OpenAI, HTMX, Redis, C#, server-side rendering)**
+
+**[rag-document-qa-svelte](./rag-document-qa-svelte)** - RAG document Q&A with Svelte
+Upload documents and ask questions using retrieval augmented generation. Vector search with Qdrant, OpenAI embeddings. **(OpenAI, Qdrant, Svelte, Python, vector database, RAG pattern)**
+
 ### Python
 
 **[python-fastapi-postgres](./python-fastapi-postgres)** - FastAPI + PostgreSQL + pgAdmin
-CRUD API with async operations. Uses `requirements.txt` and demonstrates `.WaitFor()` startup dependencies.
+CRUD API with async operations and database migrations. **(FastAPI, PostgreSQL, pgAdmin, async/await, `.WaitFor()` dependencies, requirements.txt)**
 
 **[python-openai-agent](./python-openai-agent)** - OpenAI chat agent with web UI
-AI workloads with `AddOpenAI` and uv package manager (`pyproject.toml`). Aspire prompts for API key.
+AI-powered chat agent with streaming responses. **(OpenAI integration, uv package manager, pyproject.toml, API key management)**
 
 **[python-script](./python-script)** - Pure Python script
-Zero dependencies. Demonstrates automatic virtual environment creation and management.
+Minimal Python script with zero dependencies. **(Virtual environment auto-creation, simplest possible Aspire app)**
 
 ### JavaScript
 
 **[node-express-redis](./node-express-redis)** - Express + Redis + Vite frontend
-Visit counter with clickable page cards. YARP routes frontend and API. Real-time updates with instant in-place count increments.
+Visit counter with real-time updates and clickable page cards. **(Express, Redis, Vite+React, YARP routing, WebSockets, instant state updates)**
 
 **[yarpstatic](./yarpstatic)** - YARP serving static files
-Single-file AppHost pattern. Vite with HMR in dev, static files in publish. Container files as build artifacts.
+Single-file AppHost demonstrating static file serving. **(YARP reverse proxy, Vite HMR in dev, static file publishing, container files)**
 
 ### C#
 
-**[csharp-minimal-postgres](./csharp-minimal-postgres)** - ASP.NET Core Minimal API + PostgreSQL + Vite
-Todo app with EF Core 10, pgAdmin, and Scalar API docs. React TypeScript frontend with container files publishing. Observability with OpenTelemetry.
+**[vite-csharp-postgres](./vite-csharp-postgres)** - ASP.NET Core Minimal API + PostgreSQL + Vite
+Todo app demonstrating modern .NET patterns. **(EF Core 10, PostgreSQL, pgAdmin, Scalar API docs, Vite+React, OpenTelemetry, container file publishing)**
 
 ### Polyglot
 
 **[polyglot-task-queue](./polyglot-task-queue)** - Multi-language task queue with RabbitMQ + OpenTelemetry
-Distributed task processing with Python, C#, and Node.js workers. Demonstrates message queues, language-specific strengths (pandas, strong typing, async I/O), end-to-end distributed tracing with W3C Trace Context propagation through RabbitMQ, messaging semantic conventions, and Vite frontend with real-time updates.
+Distributed task processing with Python, C#, and Node.js workers. **(RabbitMQ, distributed tracing, W3C Trace Context, messaging semantic conventions, polyglot services, Vite+React, language-specific strengths: pandas/numpy, strong typing, async I/O)**
 
 **[vite-react-fastapi](./vite-react-fastapi)** - React + FastAPI fullstack
-Todo app with YARP routing. Python backend, JavaScript frontend. Path transforms and dual-mode operation.
+Todo app with YARP routing between Python backend and JavaScript frontend. **(FastAPI, Vite+React, YARP path transforms, dual-mode dev/publish)**
 
 ## Learn More
 
