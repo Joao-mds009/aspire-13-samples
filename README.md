@@ -32,7 +32,7 @@ Minimal Python script with zero dependencies. **(Virtual environment auto-creati
 **[node-express-redis](./node-express-redis)** - Express + Redis + Vite frontend
 Visit counter with real-time updates and clickable page cards. **(Express, Redis, Vite+React, YARP routing, WebSockets, instant state updates)**
 
-**[yarpstatic](./yarpstatic)** - YARP serving static files
+**[vite-yarp-static](./vite-yarp-static)** - YARP serving static files
 Single-file AppHost demonstrating static file serving. **(YARP reverse proxy, Vite HMR in dev, static file publishing, container files)**
 
 ### C#
