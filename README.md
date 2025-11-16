@@ -43,7 +43,7 @@ Todo app demonstrating modern .NET patterns. **(EF Core 10, PostgreSQL, pgAdmin,
 ### Polyglot
 
 **[polyglot-task-queue](./polyglot-task-queue)** - Multi-language task queue with RabbitMQ + OpenTelemetry
-Distributed task processing with Python, C#, and Node.js workers. **(RabbitMQ, distributed tracing, W3C Trace Context, messaging semantic conventions, polyglot services, Vite+React, language-specific strengths: pandas/numpy, strong typing, async I/O)**
+Distributed task processing with Python, C#, and Node.js workers. **(RabbitMQ, distributed tracing, OpenTelemetry, messaging semantic conventions, polyglot services, Vite+React, language-specific strengths: pandas/numpy, strong typing, async I/O)**
 
 **[vite-react-fastapi](./vite-react-fastapi)** - React + FastAPI fullstack
 Todo app with YARP routing between Python backend and JavaScript frontend. **(FastAPI, Vite+React, YARP path transforms, dual-mode dev/publish)**
