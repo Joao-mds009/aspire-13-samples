@@ -13,6 +13,7 @@ builder.AddDockerComposeEnvironment("dc");
 // Add RabbitMQ with management UI
 var rabbitmq = builder.AddRabbitMQ("messaging")
                       .WithManagementPlugin()
+                      .WithLifetime(ContainerLifetime.Persistent)
                       .WithUrls(context =>
                       {
                          context.Urls[0].DisplayLocation = UrlDisplayLocation.DetailsOnly;
