@@ -132,6 +132,7 @@ polyglot-task-queue/
 ├── apphost.run.json           # Launch settings
 ├── api/                       # Node.js Express API
 │   ├── package.json
+│   ├── instrumentation.js    # OpenTelemetry initialization
 │   ├── index.js              # Task coordination and RabbitMQ integration
 │   └── Properties/
 │       └── launchSettings.json
@@ -145,11 +146,11 @@ polyglot-task-queue/
 │       ├── App.tsx           # Main UI component
 │       └── style.css         # Styling
 ├── worker-python/             # Python data analysis worker
-│   ├── pyproject.toml
-│   └── main.py               # aio-pika consumer with pandas processing
+│   ├── pyproject.toml        # Dependencies with OpenTelemetry
+│   └── main.py               # aio-pika consumer with pandas processing + OTel
 └── worker-csharp/             # C# report generation worker
-    ├── worker-csharp.csproj
-    └── Program.cs            # Aspire.RabbitMQ.Client consumer
+    ├── worker-csharp.csproj  # Aspire.RabbitMQ.Client + OTel packages
+    └── Program.cs            # RabbitMQ consumer with ActivitySource tracing
 ```
 
 ## Running the Sample
@@ -419,7 +420,14 @@ api.PublishWithContainerFiles(frontend, "public");
 
 ## Distributed Tracing with OpenTelemetry
 
-This sample demonstrates **end-to-end distributed tracing** across all polyglot services using OpenTelemetry.
+This sample demonstrates **end-to-end distributed tracing** across all polyglot services using OpenTelemetry, including:
+
+- ✅ **Automatic instrumentation** for HTTP/Express (Node.js)
+- ✅ **Manual instrumentation** for RabbitMQ operations across all services
+- ✅ **W3C Trace Context propagation** through message headers
+- ✅ **Messaging semantic conventions** for all queue operations
+- ✅ **Polyglot tracing** with Node.js, Python, and C# in a single trace tree
+- ✅ **Aspire Dashboard integration** for viewing traces, metrics, and logs
 
 ### Trace Flow
 
@@ -428,6 +436,12 @@ A single task submission creates a distributed trace that spans:
 ```
 Frontend (HTTP) → Node.js API → RabbitMQ → Python/C# Worker → RabbitMQ → Node.js API → Frontend
 ```
+
+**Key OpenTelemetry Features:**
+- **Context Propagation**: Trace context flows through RabbitMQ message headers using `traceparent` and `tracestate`
+- **Span Kinds**: `PRODUCER` for publishing, `CONSUMER` for consuming, `CLIENT` for HTTP
+- **Parent-Child Relationships**: Each service creates child spans linked to the parent trace
+- **Attributes**: Rich metadata including queue names, task IDs, operation types, and custom attributes
 
 ### What Gets Traced
 
@@ -459,6 +473,23 @@ Trace context is propagated through **RabbitMQ message headers** using W3C Trace
 3. **Worker publishes result**: Injects updated trace context into result headers
 4. **API consumes result**: Extracts trace context, completes the trace
 
+### Aspire OpenTelemetry Configuration
+
+Aspire automatically configures OpenTelemetry for all services via **environment variables**:
+
+- `OTEL_EXPORTER_OTLP_ENDPOINT`: Points to Aspire's OTLP collector
+- `OTEL_SERVICE_NAME`: Service name for telemetry
+- `OTEL_RESOURCE_ATTRIBUTES`: Additional resource attributes
+
+**For C# services**: `builder.AddServiceDefaults()` automatically:
+- Configures OTLP exporters for traces, metrics, and logs
+- Sets up structured logging with OpenTelemetry
+- Adds health checks
+- Enables service discovery
+- Configures HTTP resilience
+
+**For Node.js and Python**: Environment variables are consumed by the SDK initialization code to configure OTLP exporters.
+
 ### Observing Traces
 
 View distributed traces in the **Aspire Dashboard**:
@@ -474,6 +505,11 @@ View distributed traces in the **Aspire Dashboard**:
    - RabbitMQ publish to results queue
    - API consuming result
    - HTTP response
+6. Click on any span to see:
+   - Messaging semantic convention attributes
+   - Task metadata (id, type, status)
+   - Timing information
+   - Parent-child relationships across services
 
 ### Messaging Semantic Conventions
 
@@ -490,11 +526,27 @@ All RabbitMQ operations follow [OpenTelemetry Messaging Semantic Conventions](ht
 
 ### Implementation Details
 
-**Node.js**: Uses `@opentelemetry/sdk-node` with automatic instrumentation + manual spans for RabbitMQ
+**Node.js** (`api/instrumentation.js`):
+- Uses `@opentelemetry/sdk-node` with OTLP gRPC exporters for traces, metrics, and logs
+- Auto-instrumentation for HTTP and Express
+- Manual spans for RabbitMQ operations with context injection/extraction
+- Configured via `--import ./instrumentation.js` flag in package.json start script
+- OTEL endpoint automatically configured by Aspire via environment variables
 
-**Python**: Uses `opentelemetry-sdk` with manual span creation and context propagation
+**Python** (`worker-python/main.py`):
+- Uses `opentelemetry-sdk` with OTLP gRPC trace exporter
+- Manual span creation with `tracer.start_as_current_span()`
+- W3C Trace Context propagation through RabbitMQ headers via `propagate.inject()` and `propagate.extract()`
+- Span kinds: `PRODUCER` for publishing, `CONSUMER` for consuming
+- OTEL endpoint automatically configured by Aspire via `OTEL_EXPORTER_OTLP_ENDPOINT`
 
-**C#**: Uses `ActivitySource` (built into .NET) with `Aspire.RabbitMQ.Client` automatic instrumentation
+**C#** (`worker-csharp/Program.cs`):
+- Uses `ActivitySource` (built into .NET) for distributed tracing
+- `builder.AddServiceDefaults()` configures OpenTelemetry automatically (includes logging, metrics, tracing)
+- `Aspire.RabbitMQ.Client` provides automatic instrumentation for RabbitMQ operations
+- Manual `ActivitySource` for custom spans with messaging semantic conventions
+- `TextMapPropagator` for W3C Trace Context extraction/injection
+- No explicit OTLP exporter configuration needed - handled by Aspire Service Defaults
 
 ## Learn More
 

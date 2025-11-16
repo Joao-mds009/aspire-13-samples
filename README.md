@@ -34,8 +34,8 @@ Todo app with EF Core 10, pgAdmin, and Scalar API docs. React TypeScript fronten
 
 ### Polyglot
 
-**[polyglot-task-queue](./polyglot-task-queue)** - Multi-language task queue with RabbitMQ
-Distributed task processing with Python, C#, and Node.js workers. Demonstrates message queues, language-specific strengths (pandas, strong typing, async I/O), and Vite frontend with real-time updates.
+**[polyglot-task-queue](./polyglot-task-queue)** - Multi-language task queue with RabbitMQ + OpenTelemetry
+Distributed task processing with Python, C#, and Node.js workers. Demonstrates message queues, language-specific strengths (pandas, strong typing, async I/O), end-to-end distributed tracing with W3C Trace Context propagation through RabbitMQ, messaging semantic conventions, and Vite frontend with real-time updates.
 
 **[vite-react-fastapi](./vite-react-fastapi)** - React + FastAPI fullstack
 Todo app with YARP routing. Python backend, JavaScript frontend. Path transforms and dual-mode operation.
