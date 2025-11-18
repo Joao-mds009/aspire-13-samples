@@ -50,8 +50,7 @@ aspire run
 
 ```bash
 aspire run      # Run locally with Azurite
-aspire deploy   # Deploy to Docker Compose
-aspire do docker-compose-down-dc  # Teardown deployment
+aspire deploy   # Deploy to Azure Container Apps
 ```
 
 ## Security Notes
