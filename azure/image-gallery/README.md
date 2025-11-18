@@ -50,6 +50,7 @@ aspire run
 
 ```bash
 aspire run      # Run locally with Azurite
+aspire publish  # Generate Bicep files to explore deployment artifacts (output in ./aspire-output)
 aspire deploy   # Deploy to Azure Container Apps
 ```
 
@@ -127,9 +128,9 @@ if (runContinuously)
 }
 else
 {
-    // Production: event-triggered, poll 1-2 times then exit if empty
+    // Production: event-triggered, poll up to 2 times (5s wait) then exit if empty
     // New job instances start automatically when messages arrive
-    if (emptyPollCount >= MaxEmptyPolls) // MaxEmptyPolls = 2
+    if (emptyPollCount >= 2) // Exit within ~5 seconds when queue is empty
     {
         _logger.LogInformation("Queue empty, exiting");
         break;
