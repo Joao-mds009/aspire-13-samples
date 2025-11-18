@@ -91,7 +91,7 @@ public class ThumbnailWorker(
 
     private async Task ExecuteScheduledAsync(CancellationToken stoppingToken)
     {
-        var maxRunDuration = TimeSpan.FromMinutes(5);
+        var maxRunDuration = TimeSpan.FromMinutes(3);
         var gracePeriod = TimeSpan.FromSeconds(GracePeriodSeconds);
 
         _logger.LogInformation("Thumbnail worker started in SCHEDULED mode, will run for max {Duration} minutes", maxRunDuration.TotalMinutes);

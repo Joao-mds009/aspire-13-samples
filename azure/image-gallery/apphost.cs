@@ -52,7 +52,7 @@ var api = builder.AddCSharpApp("api", "./api")
     });
 
 // Worker: Container Apps Job for queue-triggered thumbnail generation
-// Runs every 2 minutes, polls for up to 2 minutes or until queue is empty
+// Runs every 4 minutes with 3-minute max duration to avoid overlapping
 var worker = builder.AddCSharpApp("worker", "./worker")
     .WithReference(blobs)
     .WithReference(queues)
@@ -67,7 +67,7 @@ if (builder.ExecutionContext.IsRunMode)
 }
 else
 {
-    worker.PublishAsScheduledAzureContainerAppJob("*/2 * * * *");
+    worker.PublishAsScheduledAzureContainerAppJob("*/4 * * * *");
 }
 
 // Frontend: Vite+React for upload and gallery UI

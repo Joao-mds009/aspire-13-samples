@@ -23,7 +23,7 @@ flowchart LR
     API --> Blobs[Azure Blob Storage]
     API --> Queue[Azure Storage Queue]
     API --> SQL[Azure SQL]
-    Job[Container Apps Job<br/>Runs every 2 min<br/>Polls for 2 min] --> Blobs
+    Job[Container Apps Job<br/>Runs every 4 min<br/>Max 3 min duration] --> Blobs
     Job --> SQL
     Queue -.Trigger.-> Job
 ```
@@ -33,8 +33,8 @@ flowchart LR
 - **AddAzureStorage**: Blob storage and queues with automatic `.RunAsEmulator()` for local development
 - **AddAzureSqlServer**: SQL Server container in run mode, Azure SQL in publish mode with `.RunAsContainer()`
 - **PublishAsAzureContainerApp**: API scales to zero when idle, reducing costs
-- **PublishAsScheduledAzureContainerAppJob**: Worker runs every 2 minutes as a scheduled job
-- **Dual-Mode Worker**: Continuous polling (5s) in run mode for instant feedback, scheduled execution (2 min) in publish mode for cost efficiency
+- **PublishAsScheduledAzureContainerAppJob**: Worker runs every 4 minutes with 3-minute max duration (avoids overlapping jobs)
+- **Dual-Mode Worker**: Continuous polling (5s) in run mode for instant feedback, scheduled execution in publish mode for cost efficiency
 - **Cost-Balanced Design**: Balances cost (exits when idle) with user experience (frequent polling in production, instant in dev)
 - **PublishWithContainerFiles**: Vite frontend embedded in API container
 - **WaitFor**: Ensures dependencies start in correct order
@@ -89,9 +89,9 @@ api.PublishAsAzureContainerApp((infra, app) =>
 });
 ```
 
-**Scheduled Container App Job** - Worker runs every 2 minutes:
+**Scheduled Container App Job** - Worker runs every 4 minutes:
 ```csharp
-worker.PublishAsScheduledAzureContainerAppJob("*/2 * * * *");
+worker.PublishAsScheduledAzureContainerAppJob("*/4 * * * *");
 ```
 
 **Dual-Mode Worker** - Continuous in run mode, scheduled in publish mode:
