@@ -52,6 +52,18 @@ aspire deploy   # Deploy to Docker Compose
 aspire do docker-compose-down-dc  # Teardown deployment
 ```
 
+## Security Notes
+
+This is a sample application for demonstration purposes. For production use, consider:
+
+- **Authentication & Authorization**: Add authentication to protect upload/delete endpoints
+- **Rate Limiting**: Implement rate limiting to prevent abuse
+- **CORS Policy**: Configure CORS for allowed origins only
+- **Blob Access Control**: Use SAS tokens with limited permissions instead of direct URLs
+- **Input Validation**: File size limited to 10 MB, formats restricted to .jpg, .jpeg, .png, .gif, .webp
+- **Content Validation**: Filenames are sanitized to prevent path traversal attacks
+- **Resource Limits**: Pagination (max 100 items), retry limits (3 attempts), size checks before processing
+
 ## Key Aspire Patterns
 
 **Azure Storage Emulation** - Automatic Azurite in run mode, real Azure in publish:

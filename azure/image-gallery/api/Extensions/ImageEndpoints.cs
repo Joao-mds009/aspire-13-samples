@@ -10,14 +10,27 @@ namespace Api.Extensions;
 
 public static class ImageEndpoints
 {
+    private const long MaxFileSizeBytes = 10 * 1024 * 1024; // 10 MB
+    private static readonly string[] AllowedImageFormats = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
+
     public static WebApplication MapImages(this WebApplication app)
     {
         var group = app.MapGroup("/api");
 
-        // Get all images
-        group.MapGet("/images", async (ImageDbContext db) =>
+        // Get all images (with pagination)
+        group.MapGet("/images", async (ImageDbContext db, int? skip = null, int? take = null) =>
         {
-            var images = await db.Images.OrderByDescending(i => i.UploadedAt).ToListAsync();
+            var query = db.Images.OrderByDescending(i => i.UploadedAt);
+
+            // Apply pagination with reasonable defaults and limits
+            var skipCount = Math.Max(0, skip ?? 0);
+            var takeCount = Math.Clamp(take ?? 100, 1, 100); // Max 100 items per page
+
+            var images = await query
+                .Skip(skipCount)
+                .Take(takeCount)
+                .ToListAsync();
+
             return images.Select(ImageDto.FromImage).ToList();
         });
 
@@ -79,10 +92,23 @@ public static class ImageEndpoints
                 return Results.BadRequest(new { error = "No file uploaded" });
             }
 
+            // Validate file size
+            if (file.Length > MaxFileSizeBytes)
+            {
+                return Results.BadRequest(new { error = $"File size exceeds maximum allowed size of {MaxFileSizeBytes / (1024 * 1024)} MB" });
+            }
+
             // Validate content type
             if (!file.ContentType.StartsWith("image/"))
             {
                 return Results.BadRequest(new { error = "File must be an image" });
+            }
+
+            // Validate file extension
+            var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
+            if (string.IsNullOrEmpty(fileExtension) || !AllowedImageFormats.Contains(fileExtension))
+            {
+                return Results.BadRequest(new { error = $"File type not allowed. Allowed types: {string.Join(", ", AllowedImageFormats)}" });
             }
 
             try
@@ -91,8 +117,9 @@ public static class ImageEndpoints
                 var queueClient = queueService.GetQueueClient("thumbnails");
                 await queueClient.CreateIfNotExistsAsync();
 
-                // Generate unique blob name
-                var blobName = $"{Guid.NewGuid()}-{file.FileName}";
+                // Generate safe blob name with sanitized filename
+                var sanitizedFileName = SanitizeFileName(file.FileName);
+                var blobName = $"{Guid.NewGuid()}{Path.GetExtension(sanitizedFileName)}";
                 var blobClient = containerClient.GetBlobClient(blobName);
 
                 // Upload to blob storage
@@ -102,7 +129,7 @@ public static class ImageEndpoints
                 // Save metadata to database
                 var image = new Image
                 {
-                    FileName = file.FileName,
+                    FileName = sanitizedFileName,
                     ContentType = file.ContentType,
                     Size = file.Length,
                     BlobUrl = blobClient.Uri.ToString(),
@@ -175,5 +202,22 @@ public static class ImageEndpoints
         });
 
         return app;
+    }
+
+    private static string SanitizeFileName(string fileName)
+    {
+        // Remove path separators and invalid characters
+        var invalidChars = Path.GetInvalidFileNameChars();
+        var sanitized = string.Concat(fileName.Split(invalidChars));
+
+        // Limit length
+        if (sanitized.Length > 255)
+        {
+            var extension = Path.GetExtension(sanitized);
+            var nameWithoutExt = Path.GetFileNameWithoutExtension(sanitized);
+            sanitized = nameWithoutExt[..(255 - extension.Length)] + extension;
+        }
+
+        return sanitized;
     }
 }

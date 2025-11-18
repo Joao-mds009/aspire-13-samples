@@ -20,6 +20,8 @@ public class ThumbnailWorker(
     private readonly ILogger<ThumbnailWorker> _logger = logger;
     private const int ThumbnailWidth = 300;
     private const int ThumbnailHeight = 300;
+    private const long MaxImageSizeBytes = 20 * 1024 * 1024; // 20 MB - slightly larger than upload limit
+    private const int MaxRetryCount = 3;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -54,6 +56,14 @@ public class ThumbnailWorker(
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to process message: {MessageId}", message.MessageId);
+
+                        // Check retry count and move to dead letter if exceeded
+                        if (message.DequeueCount >= MaxRetryCount)
+                        {
+                            _logger.LogWarning("Message {MessageId} exceeded max retry count ({MaxRetryCount}), deleting",
+                                message.MessageId, MaxRetryCount);
+                            await queueClient.DeleteMessageAsync(message.MessageId, message.PopReceipt, stoppingToken);
+                        }
                         // Message will become visible again after visibility timeout
                     }
                 }
@@ -89,6 +99,15 @@ public class ThumbnailWorker(
 
         var sourceBlobClient = _containerClient.GetBlobClient(blobName);
 
+        // Check blob size before downloading
+        var properties = await sourceBlobClient.GetPropertiesAsync(cancellationToken: cancellationToken);
+        if (properties.Value.ContentLength > MaxImageSizeBytes)
+        {
+            _logger.LogWarning("Image {ImageId} exceeds max size ({Size} bytes), skipping thumbnail generation",
+                imageId, properties.Value.ContentLength);
+            throw new InvalidOperationException($"Image size {properties.Value.ContentLength} exceeds maximum allowed {MaxImageSizeBytes}");
+        }
+
         // Download original image
         using var originalStream = new MemoryStream();
         await sourceBlobClient.DownloadToAsync(originalStream, cancellationToken);
@@ -104,7 +123,7 @@ public class ThumbnailWorker(
 
         // Upload thumbnail
         var thumbnailName = $"thumb-{blobName}";
-        var thumbnailBlobClient = containerClient.GetBlobClient(thumbnailName);
+        var thumbnailBlobClient = _containerClient.GetBlobClient(thumbnailName);
 
         using var thumbnailStream = new MemoryStream();
         await image.SaveAsJpegAsync(thumbnailStream, cancellationToken);

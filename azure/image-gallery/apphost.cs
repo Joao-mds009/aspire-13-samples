@@ -58,7 +58,7 @@ var worker = builder.AddCSharpApp("worker", "./worker")
     .WithReference(sql)
     .WaitFor(sql)
     .WaitFor(queues)
-    .PublishAsScheduledAzureContainerAppJob("*/5 * * * * *");
+    .PublishAsScheduledAzureContainerAppJob("*/1 * * * *");
 
 // Frontend: Vite+React for upload and gallery UI
 var frontend = builder.AddViteApp("frontend", "./frontend")
