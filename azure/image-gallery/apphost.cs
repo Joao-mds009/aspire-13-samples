@@ -24,7 +24,7 @@ var queues = storage.AddQueues("queues");
 
 // Azure SQL Database
 var sql = builder.AddAzureSqlServer("sql")
-    .RunAsContainer()
+    .RunAsContainer(c => c.WithLifetime(ContainerLifetime.Persistent))
     .AddDatabase("imagedb");
 
 // API: Upload images, queue thumbnail jobs, serve metadata
