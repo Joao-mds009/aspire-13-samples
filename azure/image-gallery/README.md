@@ -23,7 +23,7 @@ flowchart LR
     API --> Blobs[Azure Blob Storage]
     API --> Queue[Azure Storage Queue]
     API --> SQL[Azure SQL]
-    Job[Container Apps Job<br/>Runs every 4 min<br/>Max 3 min duration] --> Blobs
+    Job[Container Apps Job<br/>Runs every 4 min<br/>Max 2 min duration] --> Blobs
     Job --> SQL
     Queue -.Trigger.-> Job
 ```
@@ -33,7 +33,7 @@ flowchart LR
 - **AddAzureStorage**: Blob storage and queues with automatic `.RunAsEmulator()` for local development
 - **AddAzureSqlServer**: SQL Server container in run mode, Azure SQL in publish mode with `.RunAsContainer()`
 - **PublishAsAzureContainerApp**: API scales to zero when idle, reducing costs
-- **PublishAsScheduledAzureContainerAppJob**: Worker runs every 4 minutes with 3-minute max duration (avoids overlapping jobs)
+- **PublishAsScheduledAzureContainerAppJob**: Worker runs every 4 minutes with 2-minute max duration (avoids overlapping jobs)
 - **Dual-Mode Worker**: Continuous polling (5s) in run mode for instant feedback, scheduled execution in publish mode for cost efficiency
 - **Cost-Balanced Design**: Balances cost (exits when idle) with user experience (frequent polling in production, instant in dev)
 - **PublishWithContainerFiles**: Vite frontend embedded in API container

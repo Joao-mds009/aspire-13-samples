@@ -52,7 +52,7 @@ var api = builder.AddCSharpApp("api", "./api")
     });
 
 // Worker: Container Apps Job for queue-triggered thumbnail generation
-// Runs every 4 minutes with 3-minute max duration to avoid overlapping
+// Runs every 4 minutes with 2-minute max duration to avoid overlapping
 var worker = builder.AddCSharpApp("worker", "./worker")
     .WithReference(blobs)
     .WithReference(queues)
