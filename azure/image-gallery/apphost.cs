@@ -83,7 +83,7 @@ else
         }
 
         job.Configuration.TriggerType = ContainerAppJobTriggerType.Event;
-        job.Configuration.EventTriggerConfig.Scale.PollingIntervalInSeconds = 5;
+        job.Configuration.EventTriggerConfig.Scale.PollingIntervalInSeconds = 1;
         job.Configuration.EventTriggerConfig.Scale.Rules.Add(new ContainerAppJobScaleRule
         {
             Name = "queue-rule",
